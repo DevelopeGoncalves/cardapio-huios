@@ -46,12 +46,12 @@
         /* --- HERO SECTION (CAPA) --- */
         .hero {
             position: relative;
-            height: 38vh; /* Aumentado para acomodar a logo */
+            height: 38vh;
             min-height: 300px;
             background: url('img/capa-burger.jpg') center/cover no-repeat;
             background-color: #1a0800; 
             display: flex;
-            align-items: center; /* Centraliza a logo verticalmente na capa */
+            align-items: center;
             justify-content: center;
             padding-bottom: 20px;
         }
@@ -78,11 +78,11 @@
             width: 110px;
             height: 110px;
             border-radius: 50%;
-            border: 4px solid var(--primary); /* Borda laranja grossa */
-            margin: 0 auto 15px; /* Centraliza e dá espaço inferior */
-            background: #110400; /* Fundo escuro interno */
+            border: 4px solid var(--primary);
+            margin: 0 auto 15px;
+            background: #110400;
             overflow: hidden;
-            box-shadow: 0 0 20px rgba(242, 140, 40, 0.3); /* Sombra laranja */
+            box-shadow: 0 0 20px rgba(242, 140, 40, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -91,7 +91,7 @@
         .brand-logo-container img {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Ajusta a imagem da logo */
+            object-fit: cover;
         }
 
         h1 {
@@ -519,10 +519,10 @@
                 <label class="checkout-label">Como deseja receber?</label>
                 <div class="delivery-options">
                     <div class="delivery-opt" onclick="setDelivery('retirada', 0, this)">
-                        <i class="fas fa-store"></i><br>Retirar<br><span style="font-size: 0.8em; color: var(--primary);">No Templo</span>
+                        <i class="fas fa-store"></i><br>Retirar<br><span style="font-size: 0.8em; color: var(--primary);">Grátis</span>
                     </div>
-                    <div class="delivery-opt" onclick="setDelivery('entrega', 5.00, this)">
-                        <i class="fas fa-motorcycle"></i><br>Delivery<br><span style="font-size: 0.8em; color: var(--primary);">Consulte Taxa</span>
+                    <div class="delivery-opt" onclick="setDelivery('entrega', 0, this)">
+                        <i class="fas fa-motorcycle"></i><br>Entrega<br><span style="font-size: 0.8em; color: var(--primary);">Grátis</span>
                     </div>
                 </div>
             </div>
@@ -567,7 +567,6 @@
     <script>
         const WHATSAPP_NUMBER = "5527992315633"; // Coloque seu número aqui
 
-        // Objeto do carrinho atualizado para quantidades
         let order = {
             items: {}, 
             deliveryType: null,
@@ -589,7 +588,6 @@
             event.target.classList.add('active');
         }
 
-        // Nova Lógica de Adicionar/Remover itens com Quantidade
         function changeQty(id, name, price, change) {
             if (!order.items[id]) {
                 order.items[id] = { name: name, price: price, qty: 0 };
@@ -597,19 +595,15 @@
 
             order.items[id].qty += change;
             
-            // Impede quantidade negativa
             if (order.items[id].qty < 0) {
                 order.items[id].qty = 0;
             }
 
-            // Remove o item se a quantidade for 0
             if (order.items[id].qty === 0) {
                 delete order.items[id];
             }
 
-            // Atualiza o contador na tela
             document.getElementById('qty-' + id).textContent = order.items[id] ? order.items[id].qty : 0;
-            
             updateTotal();
         }
 
@@ -669,7 +663,6 @@
             let html = '';
             let subtotal = 0;
             
-            // Lista Itens
             for (let key in order.items) {
                 const item = order.items[key];
                 const itemTotal = item.price * item.qty;
@@ -677,15 +670,14 @@
                 html += `<div class="summary-row"><span>${item.qty}x ${item.name}</span><span>R$ ${itemTotal.toFixed(2).replace('.', ',')}</span></div>`;
             }
             
-            // Delivery
+            // Delivery (Agora sempre grátis)
             if(order.deliveryType) {
-                const label = order.deliveryType === 'entrega' ? 'Delivery (Taxa a consultar)' : 'Retirada no Local';
-                const val = (order.deliveryType === 'entrega' && order.deliveryCost > 0) ? '+ R$ ' + order.deliveryCost.toFixed(2).replace('.', ',') : 'Grátis';
+                const label = order.deliveryType === 'entrega' ? 'Entrega' : 'Retirada no Local';
+                const val = 'Grátis';
                 html += `<div class="summary-row" style="margin-top: 10px; color: var(--primary-light);"><span>${label}</span><span>${val}</span></div>`;
             }
 
-            // Total Final
-            let totalFinal = subtotal + (order.deliveryType === 'entrega' ? order.deliveryCost : 0);
+            let totalFinal = subtotal; // Sem somar deliveryCost, pois é 0
             html += `<div class="summary-row total"><span>TOTAL</span><span>R$ ${totalFinal.toFixed(2).replace('.', ',')}</span></div>`;
             
             box.innerHTML = html;
@@ -698,7 +690,7 @@
             }
 
             if(!order.deliveryType) {
-                alert('Por favor, selecione Retirar ou Delivery.');
+                alert('Por favor, selecione Retirar ou Entrega.');
                 return;
             }
             
@@ -711,7 +703,6 @@
             order.address = addressInput;
             order.notes = document.getElementById('notes-input').value;
 
-            // Monta a mensagem para o WhatsApp
             let msg = `*NOVO PEDIDO - HUIŌS BURGER* 🍔\n\n`;
             
             let subtotal = 0;
@@ -723,7 +714,7 @@
             }
             
             msg += `\n--------------------------------\n`;
-            msg += `*Logística:* ${order.deliveryType === 'entrega' ? '🚚 DELIVERY' : '📦 RETIRADA'}\n`;
+            msg += `*Logística:* ${order.deliveryType === 'entrega' ? '🚚 ENTREGA (Grátis)' : '📦 RETIRADA'}\n`;
             
             if(order.deliveryType === 'entrega') {
                 msg += `📍 *Endereço:* ${order.address}\n`;
@@ -733,7 +724,7 @@
             
             if(order.notes) msg += `📝 *Obs:* ${order.notes}\n`;
             
-            let totalFinal = subtotal + (order.deliveryType === 'entrega' ? order.deliveryCost : 0);
+            let totalFinal = subtotal; // Sem taxa de entrega
             
             msg += `\n💰 *TOTAL: R$ ${totalFinal.toFixed(2).replace('.', ',')}*\n`;
             msg += `--------------------------------\n`;
