@@ -129,7 +129,7 @@
         }
         .category-nav::-webkit-scrollbar { display: none; }
 
-        .nav-wrapper { padding: 0 20px; display: flex; gap: 15px; justify-content: center; }
+        .nav-wrapper { padding: 0 20px; display: flex; gap: 15px; justify-content: flex-start; }
 
         .nav-item {
             color: var(--text-muted);
@@ -217,6 +217,22 @@
             color: var(--text-muted); 
             line-height: 1.5; 
         }
+
+        /* --- EXTRA CARDS (Compact View para Adicionais) --- */
+        .extra-card {
+            background: var(--bg-card);
+            border: var(--border);
+            border-radius: var(--radius-sm);
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .extra-info { display: flex; flex-direction: column; gap: 4px; }
+        .extra-name { font-weight: 600; font-size: 1rem; color: var(--text-main); }
+        .extra-price { font-size: 0.9rem; color: var(--primary); font-weight: bold; }
 
         .qty-control {
             display: flex;
@@ -324,13 +340,14 @@
         @media (min-width: 768px) {
             .modal-overlay { align-items: center; }
             .modal-content { border-radius: 30px; }
+            .nav-wrapper { justify-content: center; } /* Centraliza no PC */
         }
 
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         .modal-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--primary); }
         .close-modal { background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; }
 
-        .checkout-section { margin-bottom: 25px; }
+        .checkout-section { margin-bottom: 20px; }
         .checkout-label { display: block; margin-bottom: 10px; color: var(--primary-light); font-weight: 600; font-size: 0.9rem; }
 
         .input-group input, .input-group textarea {
@@ -353,14 +370,16 @@
         .delivery-options { display: flex; gap: 10px; }
         .delivery-opt {
             flex: 1;
-            padding: 15px;
+            padding: 15px 5px;
             background: #2e1300;
             border: 1px solid #4a210d;
             border-radius: 12px;
             text-align: center;
             cursor: pointer;
             transition: var(--transition);
+            font-size: 0.9rem;
         }
+        .delivery-opt i { font-size: 1.3rem; margin-bottom: 5px; }
         .delivery-opt.selected { background: rgba(242, 140, 40, 0.1); border-color: var(--primary); color: var(--primary); }
 
         .address-alert {
@@ -428,6 +447,7 @@
     <nav class="category-nav">
         <div class="nav-wrapper">
             <div class="nav-item active" onclick="scrollToSection('burgers')">Hambúrgueres</div>
+            <div class="nav-item" onclick="scrollToSection('adicionais')">Adicionais</div>
             <div class="nav-item" onclick="scrollToSection('bebidas')">Bebidas</div>
         </div>
     </nav>
@@ -444,7 +464,7 @@
                     <span class="item-name">Hambúrguer Artesanal</span>
                     <span class="item-price">R$ 25,00</span>
                 </div>
-                <p class="item-desc">Pão brioche, hambúrguer bovino de 160g, queijo cheddar, alface fresca, bacon, tomate, cebola roxa e molho especial.</p>
+                <p class="item-desc">Pão brioche, hambúrguer bovino de 160g, queijo cheddar, <strong>bacon</strong>, alface fresca, tomate, cebola roxa e molho especial.</p>
                 <div class="qty-control">
                     <button class="qty-btn" onclick="changeQty('artesanal1', 'Hambúrguer Artesanal', 25.00, -1)">-</button>
                     <span id="qty-artesanal1" class="qty-val">0</span>
@@ -457,11 +477,101 @@
                     <span class="item-name">Hambúrguer Artesanal 2.0 <br><small style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted)">+ Refrigerante 200ml</small></span>
                     <span class="item-price">R$ 30,00</span>
                 </div>
-                <p class="item-desc">Pão brioche, hambúrguer bovino de 160g, queijo cheddar, alface fresca, bacon, tomate, cebola roxa, banana frita, ovo e molho especial.</p>
+                <p class="item-desc">Pão brioche, hambúrguer bovino de 160g, queijo cheddar, <strong>bacon</strong>, alface fresca, tomate, cebola roxa, banana frita, ovo e molho especial.</p>
                 <div class="qty-control">
                     <button class="qty-btn" onclick="changeQty('artesanal2', 'Hambúrguer Artesanal 2.0 c/ Refri', 30.00, -1)">-</button>
                     <span id="qty-artesanal2" class="qty-val">0</span>
                     <button class="qty-btn" onclick="changeQty('artesanal2', 'Hambúrguer Artesanal 2.0 c/ Refri', 30.00, 1)">+</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="adicionais-section" class="section">
+            <div class="section-header">
+                <h2 class="section-title">Turbine seu Burger</h2>
+            </div>
+
+            <div class="extra-card">
+                <div class="extra-info">
+                    <span class="extra-name">Bacon</span>
+                    <span class="extra-price">+ R$ 3,00</span>
+                </div>
+                <div class="qty-control" style="align-self: center;">
+                    <button class="qty-btn" onclick="changeQty('add_bacon', 'Adicional: Bacon', 3.00, -1)">-</button>
+                    <span id="qty-add_bacon" class="qty-val">0</span>
+                    <button class="qty-btn" onclick="changeQty('add_bacon', 'Adicional: Bacon', 3.00, 1)">+</button>
+                </div>
+            </div>
+
+            <div class="extra-card">
+                <div class="extra-info">
+                    <span class="extra-name">Queijo Cheddar</span>
+                    <span class="extra-price">+ R$ 2,00</span>
+                </div>
+                <div class="qty-control" style="align-self: center;">
+                    <button class="qty-btn" onclick="changeQty('add_cheddar', 'Adicional: Queijo Cheddar', 2.00, -1)">-</button>
+                    <span id="qty-add_cheddar" class="qty-val">0</span>
+                    <button class="qty-btn" onclick="changeQty('add_cheddar', 'Adicional: Queijo Cheddar', 2.00, 1)">+</button>
+                </div>
+            </div>
+
+            <div class="extra-card">
+                <div class="extra-info">
+                    <span class="extra-name">Ovo</span>
+                    <span class="extra-price">+ R$ 2,00</span>
+                </div>
+                <div class="qty-control" style="align-self: center;">
+                    <button class="qty-btn" onclick="changeQty('add_ovo', 'Adicional: Ovo', 2.00, -1)">-</button>
+                    <span id="qty-add_ovo" class="qty-val">0</span>
+                    <button class="qty-btn" onclick="changeQty('add_ovo', 'Adicional: Ovo', 2.00, 1)">+</button>
+                </div>
+            </div>
+
+            <div class="extra-card">
+                <div class="extra-info">
+                    <span class="extra-name">Banana</span>
+                    <span class="extra-price">+ R$ 1,50</span>
+                </div>
+                <div class="qty-control" style="align-self: center;">
+                    <button class="qty-btn" onclick="changeQty('add_banana', 'Adicional: Banana', 1.50, -1)">-</button>
+                    <span id="qty-add_banana" class="qty-val">0</span>
+                    <button class="qty-btn" onclick="changeQty('add_banana', 'Adicional: Banana', 1.50, 1)">+</button>
+                </div>
+            </div>
+
+            <div class="extra-card">
+                <div class="extra-info">
+                    <span class="extra-name">Alface</span>
+                    <span class="extra-price">+ R$ 1,00</span>
+                </div>
+                <div class="qty-control" style="align-self: center;">
+                    <button class="qty-btn" onclick="changeQty('add_alface', 'Adicional: Alface', 1.00, -1)">-</button>
+                    <span id="qty-add_alface" class="qty-val">0</span>
+                    <button class="qty-btn" onclick="changeQty('add_alface', 'Adicional: Alface', 1.00, 1)">+</button>
+                </div>
+            </div>
+
+            <div class="extra-card">
+                <div class="extra-info">
+                    <span class="extra-name">Tomate</span>
+                    <span class="extra-price">+ R$ 1,00</span>
+                </div>
+                <div class="qty-control" style="align-self: center;">
+                    <button class="qty-btn" onclick="changeQty('add_tomate', 'Adicional: Tomate', 1.00, -1)">-</button>
+                    <span id="qty-add_tomate" class="qty-val">0</span>
+                    <button class="qty-btn" onclick="changeQty('add_tomate', 'Adicional: Tomate', 1.00, 1)">+</button>
+                </div>
+            </div>
+
+            <div class="extra-card">
+                <div class="extra-info">
+                    <span class="extra-name">Cebola Roxa</span>
+                    <span class="extra-price">+ R$ 1,00</span>
+                </div>
+                <div class="qty-control" style="align-self: center;">
+                    <button class="qty-btn" onclick="changeQty('add_cebola', 'Adicional: Cebola Roxa', 1.00, -1)">-</button>
+                    <span id="qty-add_cebola" class="qty-val">0</span>
+                    <button class="qty-btn" onclick="changeQty('add_cebola', 'Adicional: Cebola Roxa', 1.00, 1)">+</button>
                 </div>
             </div>
         </section>
@@ -529,8 +639,23 @@
 
             <div class="checkout-section" id="address-box" style="display:none;">
                 <label class="checkout-label">Endereço de Entrega</label>
-                <div class="input-group">
-                    <input type="text" id="address-input" placeholder="Rua, Número, Bairro e Referência">
+                
+                <div style="display: grid; grid-template-columns: 3fr 1fr; gap: 10px; margin-bottom: 10px;">
+                    <div class="input-group">
+                        <input type="text" id="address-street" placeholder="Rua / Avenida">
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="address-number" placeholder="Número">
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="input-group">
+                        <input type="text" id="address-neighborhood" placeholder="Bairro">
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="address-city" placeholder="Cidade">
+                    </div>
                 </div>
             </div>
             
@@ -543,9 +668,31 @@
             </div>
 
             <div class="checkout-section">
+                <label class="checkout-label">Forma de Pagamento</label>
+                <div class="delivery-options">
+                    <div class="delivery-opt payment-opt" onclick="setPayment('Pix', this)">
+                        <i class="fab fa-pix"></i><br>Pix
+                    </div>
+                    <div class="delivery-opt payment-opt" onclick="setPayment('Cartão', this)">
+                        <i class="fas fa-credit-card"></i><br>Cartão
+                    </div>
+                    <div class="delivery-opt payment-opt" onclick="setPayment('Dinheiro', this)">
+                        <i class="fas fa-money-bill-wave"></i><br>Dinheiro
+                    </div>
+                </div>
+            </div>
+
+            <div class="checkout-section" id="change-box" style="display:none;">
+                <label class="checkout-label">Precisa de troco para quanto?</label>
+                <div class="input-group">
+                    <input type="text" id="change-input" placeholder="Ex: 50, 100 (Deixe em branco se não precisar)">
+                </div>
+            </div>
+
+            <div class="checkout-section">
                 <label class="checkout-label">Observações (Opcional)</label>
                 <div class="input-group">
-                    <textarea id="notes-input" rows="2" placeholder="Ex: Tirar a cebola, troco para R$ 50..."></textarea>
+                    <textarea id="notes-input" rows="2" placeholder="Ex: Tirar a cebola, adicionar o extra em apenas 1 lanche..."></textarea>
                 </div>
             </div>
 
@@ -557,10 +704,6 @@
             <button class="btn-whatsapp" onclick="sendToWhatsApp()">
                 <i class="fab fa-whatsapp" style="font-size: 1.4rem;"></i> Enviar Pedido
             </button>
-            
-             <p style="text-align: center; margin-top: 15px; font-size: 0.8rem; color: #888;">
-                 Pagamento na entrega ou retirada (Pix/Dinheiro/Cartão).
-             </p>
         </div>
     </div>
 
@@ -572,12 +715,15 @@
             deliveryType: null,
             deliveryCost: 0,
             address: '',
+            paymentMethod: null,
+            changeFor: '',
             notes: ''
         };
 
         function scrollToSection(id) {
             const map = {
                 'burgers': 'burgers-section',
+                'adicionais': 'adicionais-section',
                 'bebidas': 'bebidas-section'
             };
             const el = document.getElementById(map[id]);
@@ -595,13 +741,8 @@
 
             order.items[id].qty += change;
             
-            if (order.items[id].qty < 0) {
-                order.items[id].qty = 0;
-            }
-
-            if (order.items[id].qty === 0) {
-                delete order.items[id];
-            }
+            if (order.items[id].qty < 0) order.items[id].qty = 0;
+            if (order.items[id].qty === 0) delete order.items[id];
 
             document.getElementById('qty-' + id).textContent = order.items[id] ? order.items[id].qty : 0;
             updateTotal();
@@ -621,11 +762,8 @@
             
             const cart = document.getElementById('sticky-cart');
             
-            if(totalItems > 0) {
-                cart.classList.add('visible');
-            } else {
-                cart.classList.remove('visible');
-            }
+            if(totalItems > 0) cart.classList.add('visible');
+            else cart.classList.remove('visible');
         }
 
         function openCheckoutModal() {
@@ -638,7 +776,7 @@
         }
 
         function setDelivery(type, cost, el) {
-            document.querySelectorAll('.delivery-opt').forEach(d => d.classList.remove('selected'));
+            document.querySelectorAll('.delivery-opt:not(.payment-opt)').forEach(d => d.classList.remove('selected'));
             el.classList.add('selected');
             
             order.deliveryType = type;
@@ -653,9 +791,23 @@
             } else {
                 addrBox.style.display = 'none';
                 pickupBox.style.display = 'block';
-                order.address = ''; 
             }
             renderSummary();
+        }
+
+        function setPayment(method, el) {
+            document.querySelectorAll('.payment-opt').forEach(p => p.classList.remove('selected'));
+            el.classList.add('selected');
+            
+            order.paymentMethod = method;
+            
+            const changeBox = document.getElementById('change-box');
+            if(method === 'Dinheiro') {
+                changeBox.style.display = 'block';
+            } else {
+                changeBox.style.display = 'none';
+                document.getElementById('change-input').value = ''; 
+            }
         }
 
         function renderSummary() {
@@ -670,14 +822,13 @@
                 html += `<div class="summary-row"><span>${item.qty}x ${item.name}</span><span>R$ ${itemTotal.toFixed(2).replace('.', ',')}</span></div>`;
             }
             
-            // Delivery (Agora sempre grátis)
             if(order.deliveryType) {
                 const label = order.deliveryType === 'entrega' ? 'Entrega' : 'Retirada no Local';
                 const val = 'Grátis';
                 html += `<div class="summary-row" style="margin-top: 10px; color: var(--primary-light);"><span>${label}</span><span>${val}</span></div>`;
             }
 
-            let totalFinal = subtotal; // Sem somar deliveryCost, pois é 0
+            let totalFinal = subtotal;
             html += `<div class="summary-row total"><span>TOTAL</span><span>R$ ${totalFinal.toFixed(2).replace('.', ',')}</span></div>`;
             
             box.innerHTML = html;
@@ -693,15 +844,29 @@
                 alert('Por favor, selecione Retirar ou Entrega.');
                 return;
             }
-            
-            const addressInput = document.getElementById('address-input').value;
-            if(order.deliveryType === 'entrega' && !addressInput.trim()) {
-                alert('Por favor, informe o endereço de entrega.');
+
+            if(!order.paymentMethod) {
+                alert('Por favor, selecione a Forma de Pagamento.');
                 return;
             }
             
-            order.address = addressInput;
+            // Validação dos novos campos de endereço
+            if(order.deliveryType === 'entrega') {
+                const street = document.getElementById('address-street').value.trim();
+                const number = document.getElementById('address-number').value.trim();
+                const neighborhood = document.getElementById('address-neighborhood').value.trim();
+                const city = document.getElementById('address-city').value.trim();
+
+                if(!street || !number || !neighborhood || !city) {
+                    alert('Por favor, preencha todos os campos do endereço de entrega (Rua, Número, Bairro e Cidade).');
+                    return;
+                }
+                
+                order.address = `${street}, ${number} - ${neighborhood}, ${city}`;
+            }
+            
             order.notes = document.getElementById('notes-input').value;
+            order.changeFor = document.getElementById('change-input').value;
 
             let msg = `*NOVO PEDIDO - HUIŌS BURGER* 🍔\n\n`;
             
@@ -721,10 +886,15 @@
             } else {
                 msg += `📍 *Retirada no Templo IBNV*\n`;
             }
+
+            msg += `💳 *Pagamento:* ${order.paymentMethod}\n`;
+            if(order.paymentMethod === 'Dinheiro' && order.changeFor.trim() !== '') {
+                msg += `💵 *Troco para:* R$ ${order.changeFor}\n`;
+            }
             
             if(order.notes) msg += `📝 *Obs:* ${order.notes}\n`;
             
-            let totalFinal = subtotal; // Sem taxa de entrega
+            let totalFinal = subtotal;
             
             msg += `\n💰 *TOTAL: R$ ${totalFinal.toFixed(2).replace('.', ',')}*\n`;
             msg += `--------------------------------\n`;
