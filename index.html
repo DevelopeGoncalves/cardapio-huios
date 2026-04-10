@@ -831,6 +831,15 @@
             let totalFinal = subtotal;
             html += `<div class="summary-row total"><span>TOTAL</span><span>R$ ${totalFinal.toFixed(2).replace('.', ',')}</span></div>`;
             
+            // ADICIONADO: Bloco de PIX visual no Modal
+            html += `
+                <div style="margin-top: 15px; padding: 12px; background: #25d36620; border: 1px dashed #25d366; border-radius: 10px; text-align: center;">
+                    <small style="color: #25d366; display: block; margin-bottom: 5px;">CHAVE PIX (CNPJ/CPF):</small>
+                    <strong style="font-size: 1.1rem; color: #fff; letter-spacing: 1px;">16523819701</strong>
+                    <p style="font-size: 0.75rem; color: #aaa; margin-top: 5px;">*Favor enviar o comprovante após o pedido!</p>
+                </div>
+            `;
+            
             box.innerHTML = html;
         }
 
@@ -894,11 +903,15 @@
             
             if(order.notes) msg += `📝 *Obs:* ${order.notes}\n`;
             
+    
             let totalFinal = subtotal;
             
             msg += `\n💰 *TOTAL: R$ ${totalFinal.toFixed(2).replace('.', ',')}*\n`;
             msg += `--------------------------------\n`;
-            msg += `Aguardo a confirmação do pedido!`;
+            
+            // ADICIONADO: Informação de PIX na mensagem do Zap
+            msg += `🔑 *Chave PIX:* 16523819701\n`;
+            msg += `📸 *Por favor, envie o comprovante nesta conversa!*`;
 
             const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
             window.open(url, '_blank');
