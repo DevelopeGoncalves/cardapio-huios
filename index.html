@@ -367,19 +367,24 @@
             outline: none;
         }
 
-        .delivery-options { display: flex; gap: 10px; }
+        /* Modificado para comportar 3 botões melhor */
+        .delivery-options { display: flex; gap: 8px; }
         .delivery-opt {
             flex: 1;
-            padding: 15px 5px;
+            padding: 12px 5px;
             background: #2e1300;
             border: 1px solid #4a210d;
             border-radius: 12px;
             text-align: center;
             cursor: pointer;
             transition: var(--transition);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
-        .delivery-opt i { font-size: 1.3rem; margin-bottom: 5px; }
+        .delivery-opt i { font-size: 1.2rem; margin-bottom: 5px; }
         .delivery-opt.selected { background: rgba(242, 140, 40, 0.1); border-color: var(--primary); color: var(--primary); }
 
         .address-alert {
@@ -629,10 +634,13 @@
                 <label class="checkout-label">Como deseja receber?</label>
                 <div class="delivery-options">
                     <div class="delivery-opt" onclick="setDelivery('retirada', 0, this)">
-                        <i class="fas fa-store"></i><br>Retirar<br><span style="font-size: 0.8em; color: var(--primary);">Grátis</span>
+                        <i class="fas fa-store"></i>Retirar<span style="font-size: 0.9em; color: var(--primary); margin-top: 2px;">Grátis</span>
                     </div>
-                    <div class="delivery-opt" onclick="setDelivery('entrega', 0, this)">
-                        <i class="fas fa-motorcycle"></i><br>Entrega<br><span style="font-size: 0.8em; color: var(--primary);">Grátis</span>
+                    <div class="delivery-opt" onclick="setDelivery('entrega_jd', 0, this)">
+                        <i class="fas fa-motorcycle"></i>Jd. Carapina<span style="font-size: 0.9em; color: var(--primary); margin-top: 2px;">Grátis</span>
+                    </div>
+                    <div class="delivery-opt" onclick="setDelivery('entrega_outros', 2, this)">
+                        <i class="fas fa-motorcycle"></i>Outros<span style="font-size: 0.9em; color: var(--primary); margin-top: 2px;">+ R$ 2,00</span>
                     </div>
                 </div>
             </div>
@@ -671,13 +679,13 @@
                 <label class="checkout-label">Forma de Pagamento</label>
                 <div class="delivery-options">
                     <div class="delivery-opt payment-opt" onclick="setPayment('Pix', this)">
-                        <i class="fab fa-pix"></i><br>Pix
+                        <i class="fab fa-pix"></i>Pix
                     </div>
                     <div class="delivery-opt payment-opt" onclick="setPayment('Cartão', this)">
-                        <i class="fas fa-credit-card"></i><br>Cartão
+                        <i class="fas fa-credit-card"></i>Cartão
                     </div>
                     <div class="delivery-opt payment-opt" onclick="setPayment('Dinheiro', this)">
-                        <i class="fas fa-money-bill-wave"></i><br>Dinheiro
+                        <i class="fas fa-money-bill-wave"></i>Dinheiro
                     </div>
                 </div>
             </div>
@@ -785,7 +793,8 @@
             const addrBox = document.getElementById('address-box');
             const pickupBox = document.getElementById('pickup-box');
             
-            if(type === 'entrega') {
+            // Verifica se o tipo escolhido começa com 'entrega'
+            if(type.startsWith('entrega')) {
                 addrBox.style.display = 'block';
                 pickupBox.style.display = 'none';
             } else {
@@ -823,15 +832,18 @@
             }
             
             if(order.deliveryType) {
-                const label = order.deliveryType === 'entrega' ? 'Entrega' : 'Retirada no Local';
-                const val = 'Grátis';
+                let label = 'Retirada no Local';
+                if(order.deliveryType === 'entrega_jd') label = 'Entrega (Jd. Carapina)';
+                if(order.deliveryType === 'entrega_outros') label = 'Entrega (Outros Bairros)';
+                
+                const val = order.deliveryCost > 0 ? `R$ ${order.deliveryCost.toFixed(2).replace('.', ',')}` : 'Grátis';
                 html += `<div class="summary-row" style="margin-top: 10px; color: var(--primary-light);"><span>${label}</span><span>${val}</span></div>`;
             }
 
-            let totalFinal = subtotal;
+            // Soma a taxa de entrega ao total final
+            let totalFinal = subtotal + order.deliveryCost;
             html += `<div class="summary-row total"><span>TOTAL</span><span>R$ ${totalFinal.toFixed(2).replace('.', ',')}</span></div>`;
             
-            // ADICIONADO: Bloco de PIX visual no Modal
             html += `
                 <div style="margin-top: 15px; padding: 12px; background: #25d36620; border: 1px dashed #25d366; border-radius: 10px; text-align: center;">
                     <small style="color: #25d366; display: block; margin-bottom: 5px;">CHAVE PIX (CNPJ/CPF):</small>
@@ -850,7 +862,7 @@
             }
 
             if(!order.deliveryType) {
-                alert('Por favor, selecione Retirar ou Entrega.');
+                alert('Por favor, selecione uma opção de recebimento.');
                 return;
             }
 
@@ -859,8 +871,7 @@
                 return;
             }
             
-            // Validação dos novos campos de endereço
-            if(order.deliveryType === 'entrega') {
+            if(order.deliveryType.startsWith('entrega')) {
                 const street = document.getElementById('address-street').value.trim();
                 const number = document.getElementById('address-number').value.trim();
                 const neighborhood = document.getElementById('address-neighborhood').value.trim();
@@ -888,9 +899,14 @@
             }
             
             msg += `\n--------------------------------\n`;
-            msg += `*Logística:* ${order.deliveryType === 'entrega' ? '🚚 ENTREGA (Grátis)' : '📦 RETIRADA'}\n`;
             
-            if(order.deliveryType === 'entrega') {
+            let logisticaLabel = '📦 RETIRADA';
+            if (order.deliveryType === 'entrega_jd') logisticaLabel = '🚚 ENTREGA (Jd. Carapina) - Grátis';
+            if (order.deliveryType === 'entrega_outros') logisticaLabel = '🚚 ENTREGA (Outros Bairros) - R$ 2,00';
+            
+            msg += `*Logística:* ${logisticaLabel}\n`;
+            
+            if(order.deliveryType.startsWith('entrega')) {
                 msg += `📍 *Endereço:* ${order.address}\n`;
             } else {
                 msg += `📍 *Retirada no Templo IBNV*\n`;
@@ -903,13 +919,12 @@
             
             if(order.notes) msg += `📝 *Obs:* ${order.notes}\n`;
             
-    
-            let totalFinal = subtotal;
+            // Soma a taxa de entrega na mensagem do WhatsApp
+            let totalFinal = subtotal + order.deliveryCost;
             
             msg += `\n💰 *TOTAL: R$ ${totalFinal.toFixed(2).replace('.', ',')}*\n`;
             msg += `--------------------------------\n`;
             
-            // ADICIONADO: Informação de PIX na mensagem do Zap
             msg += `🔑 *Chave PIX:* 16523819701\n`;
             msg += `📸 *Por favor, envie o comprovante nesta conversa!*`;
 
